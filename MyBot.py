@@ -2,13 +2,17 @@ from hlt import *
 from networking import *
 
 myID, gameMap = getInit()
-sendInit("krszwsk")
+sendInit("krszwsk v2")
 
 def move(location):
     site = gameMap.getSite(location)
-    if site.strength == 0:
+    for d in CARDINALS:
+        neighbour_site = gameMap.getSite(location, d)
+        if neighbour_site.owner != myID and neighbour_site.strength < site.strength:
+            return Move(location, d)
+    if site.strength <  site.production * 5:
         return Move(location, STILL)
-    return Move(location, random.choice(DIRECTIONS))
+    return Move(location, NORTH if random.random() > 0.5 else WEST)
 
 while True:
     moves = []
