@@ -6,7 +6,7 @@ l.basicConfig(filename='MyBot.log', level=l.DEBUG)
 l.disabled = True
 
 myID, gameMap = getInit()
-sendInit("krszwsk v6")
+sendInit("krszwsk v2")
 
 def dirToStr(d):
     if d == STILL:
