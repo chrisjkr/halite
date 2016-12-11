@@ -2,12 +2,13 @@ import hlt
 from hlt import NORTH, EAST, SOUTH, WEST, STILL, Move, Square
 import random
 import logging as l
+import time
 
-l.basicConfig(filename='v4.log', level=l.DEBUG)
-l.disabled = False
+l.basicConfig(filename='v5.log', level=l.DEBUG)
+l.disabled = True
 
 myID, game_map = hlt.get_init()
-hlt.send_init("krszwsk v4")
+hlt.send_init("krszwsk v5")
 
 def dirToStr(d):
     if d == STILL:
@@ -25,7 +26,6 @@ def get_nice_string(list_or_iterator):
     return "[" + ", ".join( str(x) for x in list_or_iterator) + "]"
 
 def find_closest_border(square):
-    l.info('findClosestBorder called width location ' + str(square.x) + ', ' + str(square.y) + '.')
     max_distance = min(game_map.width / 2, game_map.height / 2)
     direction = NORTH
     for d in (NORTH, EAST, SOUTH, WEST):
@@ -34,11 +34,9 @@ def find_closest_border(square):
         while current.owner == myID and distance < max_distance:
             distance += 1
             current = game_map.get_target(current, d)
-        l.info('Distance to border in ' + dirToStr(d) + ' direction is ' + str(distance))
         if distance < max_distance:
             direction = d
             max_distance = distance
-    l.info('Closest border is ' + dirToStr(direction) + ' with distance ' + str(distance))
     return direction
 
 def find_path_to_location(home, target):
@@ -85,7 +83,12 @@ def move(square):
 
 while True:
     game_map.get_frame()
+    start = time.time()
     come_here = []
-    moves = [move(square) for square in game_map if square.owner == myID]
-    l.info(get_nice_string(come_here))
+    moves = []
+    for square in game_map:
+        if time.time() - start > 1.2:
+            break
+        if square.owner == myID:
+            moves.append(move(square))
     hlt.send_frame(moves)
