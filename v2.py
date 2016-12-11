@@ -1,10 +1,27 @@
 from hlt import *
 from networking import *
+import logging as l
+
+l.basicConfig(filename='MyBot.log', level=l.DEBUG)
+l.disabled = True
 
 myID, gameMap = getInit()
 sendInit("krszwsk v6")
 
+def dirToStr(d):
+    if d == STILL:
+        return 'STILL'
+    elif d == NORTH:
+        return 'NORTH'
+    elif d == EAST:
+        return 'EAST'
+    elif d == SOUTH:
+        return 'SOUTH'
+    elif d == WEST:
+        return 'WEST'
+
 def findClosestBorder(location):
+    l.info('findClosestBorder called width location ' + str(location.x) + ', ' + str(location.y) + '.')
     max_distance = min(gameMap.width / 2, gameMap.height / 2)
     direction = NORTH
     for d in CARDINALS:
@@ -15,9 +32,11 @@ def findClosestBorder(location):
             distance += 1
             current = gameMap.getLocation(current, d)
             site = gameMap.getSite(current)
+        l.info('Distance to border in ' + dirToStr(d) + ' direction is ' + str(distance))
         if distance < max_distance:
             direction = d
             max_distance = distance
+    l.info('Closest border is ' + dirToStr(direction) + ' with distance ' + str(distance))
     return direction
 
 def move(location):
