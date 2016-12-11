@@ -2,24 +2,23 @@ from hlt import *
 from networking import *
 
 myID, gameMap = getInit()
-sendInit("krszwsk v5")
+sendInit("krszwsk v6")
 
-def findClosestEdge(location):
-    lowest_distance = min(gameMap.width / 2, gameMap.height / 2)
-    lowest_coordinate = NORTH
-    if location.x < gameMap.width / 2 and location.x < lowest_distance:
-        lowest_distance = location.x
-        lowest_coordinate = WEST
-    if location.x > gameMap.width / 2 and gameMap.width - location.x < lowest_distance:
-        lowest_distance = gameMap.width - location.x
-        lowest_coordinate = EAST
-    if location.y < gameMap.height / 2 and location.y < lowest_distance:
-        lowest_distance = location.y
-        lowest_coordinate = SOUTH
-    if location.y > gameMap.height / 2 and gameMap.height - location.y < lowest_distance:
-        lowest_distance = gameMap.height - location.y
-        lowest_coordinate = NORTH
-    return Move(location, lowest_coordinate)
+def findClosestBorder(location):
+    max_distance = min(gameMap.width / 2, gameMap.height / 2)
+    direction = NORTH
+    for d in CARDINALS:
+        distance = 0
+        current = location
+        site = gameMap.getSite(current, d)
+        while site.owner == myID and distance < max_distance:
+            distance += 1
+            current = gameMap.getLocation(current, d)
+            site = gameMap.getSite(current)
+        if distance < max_distance:
+            direction = d
+            max_distance = distance
+    return direction
 
 def move(location):
     site = gameMap.getSite(location)
@@ -35,7 +34,7 @@ def move(location):
     # If site has enemy neighbour and has less strength, just wait
     if border or site.strength < site.production * 5:
         return Move(location, STILL)
-    return findClosestEdge(location)
+    return Move(location, findClosestBorder(location))
 
 while True:
     moves = []
