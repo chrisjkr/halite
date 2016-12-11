@@ -2,7 +2,7 @@ from hlt import *
 from networking import *
 
 myID, gameMap = getInit()
-sendInit("krszwsk v2")
+sendInit("krszwsk v3")
 
 def move(location):
     site = gameMap.getSite(location)
@@ -10,9 +10,7 @@ def move(location):
         neighbour_site = gameMap.getSite(location, d)
         if neighbour_site.owner != myID and neighbour_site.strength < site.strength:
             return Move(location, d)
-    if site.strength <  site.production * 5:
-        return Move(location, STILL)
-    return Move(location, NORTH if random.random() > 0.5 else WEST)
+    return Move(location, STILL)
 
 while True:
     moves = []
